@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhosik Nails — CRM & Аналитика</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#fce4ec,#fdf6f0,#fff5f7);min-height:100vh;color:#2d1f24;padding:16px;}
+        .wrap{max-width:1100px;margin:0 auto;background:rgba(255,255,255,0.75);backdrop-filter:blur(20px);border-radius:28px;padding:24px 18px;border:1px solid rgba(255,255,255,0.7);box-shadow:0 8px 40px rgba(232,160,180,0.15);}
+        .hidden{display:none!important;}
+        .deny{text-align:center;padding:60px 20px;}
+        .back{color:#9e7d8a;text-decoration:none;font-size:0.85rem;display:inline-block;margin-bottom:12px;}
+        .logo{text-align:center;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;}
+        .logo span{color:#d48196;font-style:italic;}
+        .sub{text-align:center;font-size:0.75rem;color:#9e7d8a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;}
+        .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;}
+        .tab{flex:1;padding:10px;font-size:0.78rem;font-weight:600;font-family:inherit;border:none;border-radius:14px;cursor:pointer;background:rgba(255,255,255,0.5);color:#9e7d8a;}
+        .tab.active{background:#e8a0b4;color:#fff;}
+        .pane{display:none;}
+        .pane.active{display:block;}
+        .card{background:rgba(255,255,255,0.8);border-radius:16px;padding:16px;margin-bottom:14px;}
+        label{display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;color:#6b4c5a;margin-bottom:3px;}
+        select,input,textarea{width:100%;padding:10px 12px;font-size:0.85rem;font-family:inherit;border:1.5px solid rgba(232,160,180,0.3);border-radius:10px;background:rgba(255,255,255,0.85);outline:none;margin-bottom:8px;}
+        .btn{padding:10px 20px;font-size:0.82rem;font-weight:600;font-family:inherit;border:none;border-radius:14px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#e8a0b4,#d48196);box-shadow:0 4px 16px rgba(232,160,180,0.3);}
+        .btn-s{background:transparent;border:1.5px solid rgba(232,160,180,0.4);color:#6b4c5a;box-shadow:none;}
+        .msg{padding:8px 12px;border-radius:10px;margin-top:8px;font-size:0.8rem;display:none;}
+        .msg.show{display:block;}
+        .msg.ok{background:rgba(124,191,158,0.2);color:#27835a;}
+        .msg.er{background:rgba(232,139,139,0.2);color:#c0392b;}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .p-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+        .p-btn{padding:6px 14px;font-size:0.7rem;font-weight:600;font-family:inherit;border-radius:16px;cursor:pointer;border:1px solid rgba(232,160,180,0.3);background:transparent;color:#6b4c5a;}
+        .p-btn.active{background:#e8a0b4;color:#fff;border-color:#e8a0b4;}
+        .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:12px 0;}
+        .stat{background:rgba(255,255,255,0.7);border-radius:12px;padding:14px;text-align:center;}
+        .stat.hl{background:linear-gradient(135deg,rgba(252,228,236,0.7),rgba(232,160,180,0.2));}
+        .stat .ic{font-size:1.2rem;}
+        .stat .lb{font-size:0.65rem;text-transform:uppercase;color:#9e7d8a;margin:4px 0;}
+        .stat .vl{font-size:1.1rem;font-weight:700;}
+        table{width:100%;border-collapse:collapse;font-size:0.75rem;margin-top:10px;}
+        th{background:rgba(252,228,236,0.4);padding:8px 6px;text-align:left;font-weight:600;}
+        td{padding:6px;border-bottom:1px solid rgba(232,160,180,0.1);}
+        @media(max-width:600px){.row{grid-template-columns:1fr;}.stats{grid-template-columns:1fr 1fr;}}
+    </style>
+</head>
+<body>
+<div class="wrap" id="app">
+<div id="deny" class="deny hidden"><h2>🔒 Доступ запрещён</h2><p>Нужна секретная ссылка</p><a href="index.html" class="btn" style="text-decoration:none;display:inline-block;margin-top:16px;">На главную</a></div>
+<div id="ui" class="hidden">
+    <a href="index.html" class="back">← На главную</a>
+    <div class="logo">Zhosik <span>Nails</span></div>
+    <div class="sub">CRM & Финансы</div>
+    <div class="tabs">
+        <button class="tab active" data-t="an">📊 Аналитика</button>
+        <button class="tab" data-t="co">💰 Себестоимость</button>
+        <button class="tab" data-t="cr">👥 CRM</button>
+    </div>
+    <div class="pane active" id="p-an">
+        <div class="card">
+            <div class="p-btns">
+                <button class="p-btn active" data-per="day">День</button>
+                <button class="p-btn" data-per="week">Неделя</button>
+                <button class="p-btn" data-per="month">Месяц</button>
+            </div>
+            <div class="row"><div><label>С</label><input type="date" id="ps"></div><div><label>По</label><input type="date" id="pe"></div></div>
+            <button class="btn" id="ls">Загрузить</button>
+            <div class="stats">
+                <div class="stat"><div class="ic">💰</div><div class="lb">Выручка</div><div class="vl" id="rv">—</div></div>
+                <div class="stat"><div class="ic">📦</div><div class="lb">Расходы</div><div class="vl" id="rc">—</div></div>
+                <div class="stat hl"><div class="ic">💎</div><div class="lb">Прибыль</div><div class="vl" id="rp">—</div></div>
+                <div class="stat"><div class="ic">👥</div><div class="lb">Клиентов</div><div class="vl" id="rcl">—</div></div>
+                <div class="stat"><div class="ic">🧾</div><div class="lb">Средний чек</div><div class="vl" id="rav">—</div></div>
+            </div>
+            <div style="overflow-x:auto;"><table><thead><tr><th>Дата</th><th>Клиент</th><th>Услуга</th><th>Цена</th><th>Себест.</th><th>Прибыль</th></tr></thead><tbody id="tb"></tbody></table></div>
+            <div class="msg" id="smsg"></div>
+        </div>
+    </div>
+    <div class="pane" id="p-co">
+        <div class="card">
+            <label>ID записи</label><input id="bid" placeholder="b...">
+            <label>Сумма</label><input type="number" id="cst" placeholder="0">
+            <label>Примечание</label><input id="cnt" placeholder="Материалы">
+            <button class="btn" id="sc">Сохранить</button>
+            <div class="msg" id="cmsg"></div>
+        </div>
+    </div>
+    <div class="pane" id="p-cr">
+        <div class="card">
+            <label>Поиск клиента</label><input id="sq" placeholder="Телефон или имя">
+            <button class="btn" id="scr">Поиск</button>
+            <div id="sr" style="margin-top:10px;"></div>
+        </div>
+        <div class="card">
+            <label>Телефон</label><input id="nph" placeholder="79991234567">
+            <label>Заметка</label><textarea id="ntx" rows="2" placeholder="Предпочтения..."></textarea>
+            <button class="btn" id="sn">Сохранить заметку</button>
+            <div class="msg" id="nmsg"></div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbysSy81zufCQN_9E1g_GtGCIvD7myNL0drzU3EfcboMvL4aV47Vxuyt_AL6KHhAf3KnrQ/exec';
+const KEY='zhosik-jasmine-secret';
+if(new URLSearchParams(location.search).get('access')!==KEY){document.getElementById('deny').classList.remove('hidden');}else{
+document.getElementById('ui').classList.remove('hidden');
+function $(s){return document.querySelector(s);}
+function $$(s){return document.querySelectorAll(s);}
+function fd(d){const p=d.split('-');return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d;}
+function ft(t){return t.slice(0,5);}
+function msg(id,t,c){const e=document.getElementById(id);if(!e)return;e.textContent=t;e.className='msg '+c+' show';setTimeout(()=>e.classList.remove('show'),4000);}
+function api(p){return new Promise(r=>{const cb='c'+Date.now();window[cb]=d=>{delete window[cb];r(d);};const s=document.createElement('script');s.src=API+'?action='+p.action+'&'+Object.entries(p).filter(([k])=>k!=='action').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&')+'&callback='+cb;s.onerror=()=>{delete window[cb];r({ok:false,error:'Ошибка сети'});};document.head.appendChild(s);setTimeout(()=>{if(window[cb]){delete window[cb];r({ok:false,error:'Таймаут'});}},15000);});}
+
+$$('.tab').forEach(t=>t.addEventListener('click',function(){
+    $$('.tab').forEach(x=>x.classList.remove('active'));$$('.pane').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');document.getElementById('p-'+this.dataset.t).classList.add('active');
+}));
+
+const ps=$('#ps'),pe=$('#pe'),today=new Date().toISOString().slice(0,10);ps.value=today;pe.value=today;
+$$('.p-btn').forEach(b=>b.addEventListener('click',function(){
+    $$('.p-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');
+    const n=new Date();
+    if(this.dataset.per==='day'){const d=n.toISOString().slice(0,10);ps.value=d;pe.value=d;}
+    if(this.dataset.per==='week'){const e=new Date(n);const s=new Date(n);s.setDate(n.getDate()-6);pe.value=e.toISOString().slice(0,10);ps.value=s.toISOString().slice(0,10);}
+    if(this.dataset.per==='month'){ps.value=new Date(n.getFullYear(),n.getMonth(),1).toISOString().slice(0,10);pe.value=n.toISOString().slice(0,10);}
+}));
+$('#ls').addEventListener('click',async()=>{
+    const r=await api({action:'stats',startDate:ps.value,endDate:pe.value});
+    if(r.ok){
+        $('#rv').textContent=(r.revenue||0).toLocaleString()+' ₽';
+        $('#rc').textContent=(r.totalCost||0).toLocaleString()+' ₽';
+        $('#rp').textContent=(r.profit||0).toLocaleString()+' ₽';
+        $('#rcl').textContent=r.clientCount||0;
+        $('#rav').textContent=(r.avgCheck||0).toLocaleString()+' ₽';
+        $('#tb').innerHTML=(r.details||[]).map(d=>`<tr><td>${fd(d.date)} ${ft(d.time)}</td><td>${d.clientName||''}</td><td>${d.serviceName||''}</td><td>${(d.price||0).toLocaleString()} ₽</td><td>${(d.cost||0).toLocaleString()} ₽</td><td style="color:${d.profit>=0?'#27835a':'#c0392b'}">${(d.profit||0).toLocaleString()} ₽</td></tr>`).join('');
+    }else msg('smsg',r.error,'er');
+});
+$('#sc').addEventListener('click',async()=>{
+    const r=await api({action:'saveCost',bookingId:$('#bid').value, cost:parseFloat($('#cst').value), note:$('#cnt').value});
+    if(r.ok){msg('cmsg','Сохранено','ok');$('#bid').value='';$('#cst').value='';$('#cnt').value='';}else msg('cmsg',r.error,'er');
+});
+$('#scr').addEventListener('click',async()=>{
+    const r=await api({action:'crmSearch',query:$('#sq').value});
+    $('#sr').innerHTML=r.ok&&r.clients?r.clients.map(c=>`<div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:6px;"><b>${c.clientName}</b> — +7 ${c.clientPhone.slice(1,4)} ${c.clientPhone.slice(4,7)}-${c.clientPhone.slice(7,9)}-${c.clientPhone.slice(9,11)}<br><small>Записей: ${c.bookingCount}, Последняя: ${c.lastVisit?fd(c.lastVisit):'—'}</small>${c.note?`<br><span style="color:#6b4c5a;">📝 ${c.note}</span>`:''}</div>`).join(''):'<p>Не найдено</p>';
+});
+$('#sn').addEventListener('click',async()=>{
+    const r=await api({action:'saveClientNote',clientPhone:$('#nph').value.replace(/\D/g,''),note:$('#ntx').value});
+    if(r.ok){msg('nmsg','Сохранено','ok');$('#ntx').value='';}else msg('nmsg',r.error,'er');
+});
+}
+</script>
+</body>
+</html>

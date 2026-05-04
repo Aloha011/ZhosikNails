@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fce4ec">
+    <title>Zhosik Nails — Онлайн-запись</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #fce4ec, #fdf6f0, #fff5f7, #fce4ec);
+            min-height: 100vh; color: #2d1f24; padding: 16px;
+        }
+        .wrap {
+            max-width: 800px; margin: 0 auto;
+            background: rgba(255,255,255,0.75); backdrop-filter: blur(20px);
+            border-radius: 28px; padding: 32px 24px;
+            border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 8px 40px rgba(232,160,180,0.15);
+        }
+        .logo { text-align: center; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; }
+        .logo span { color: #d48196; font-style: italic; }
+        .sub { text-align: center; font-size: 0.8rem; color: #9e7d8a; text-transform: uppercase; letter-spacing: 0.1em; margin: 4px 0 24px; }
+        h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 4px; }
+        .info { font-size: 0.85rem; color: #9e7d8a; margin-bottom: 16px; }
+        .fg { margin-bottom: 14px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b4c5a; margin-bottom: 4px; letter-spacing: 0.05em; }
+        select, input {
+            width: 100%; padding: 12px 16px; font-size: 0.95rem; font-family: inherit;
+            border: 1.5px solid rgba(232,160,180,0.35); border-radius: 12px;
+            background: rgba(255,255,255,0.85); color: #2d1f24; outline: none;
+        }
+        select:focus, input:focus { border-color: #e8a0b4; box-shadow: 0 0 0 4px rgba(232,160,180,0.1); }
+        select:disabled { opacity: 0.5; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .times { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 6px; max-height: 180px; overflow-y: auto; padding: 4px; background: rgba(255,255,255,0.4); border-radius: 12px; }
+        .tbtn {
+            padding: 10px 4px; font-size: 0.8rem; font-family: inherit; text-align: center;
+            background: #fff; border: 1px solid rgba(232,160,180,0.2); border-radius: 10px;
+            cursor: pointer; color: #2d1f24; transition: 0.2s;
+        }
+        .tbtn:hover:not(.off) { border-color: #e8a0b4; background: #fce4ec; }
+        .tbtn.sel { background: #e8a0b4; color: #fff; font-weight: 600; border-color: #e8a0b4; }
+        .tbtn.off { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; background: #f5f0f2; }
+        .btn {
+            width: 100%; padding: 14px; font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            color: #fff; background: linear-gradient(135deg, #e8a0b4, #d48196); border: none;
+            border-radius: 20px; cursor: pointer; margin-top: 16px; letter-spacing: 0.04em;
+            box-shadow: 0 4px 20px rgba(232,160,180,0.35); transition: 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .err { display: none; padding: 10px 14px; background: rgba(232,139,139,0.15); color: #c0392b; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; }
+        .err.show { display: block; }
+        .modal {
+            position: fixed; inset: 0; background: rgba(45,31,36,0.5); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal>div {
+            background: rgba(255,255,255,0.95); border-radius: 24px; padding: 36px 24px;
+            text-align: center; max-width: 400px; width: 90%;
+        }
+        .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; }
+        .modal p { color: #9e7d8a; margin-bottom: 16px; }
+        .modal button {
+            padding: 12px 30px; font-family: inherit; font-weight: 600; font-size: 0.9rem;
+            color: #fff; background: linear-gradient(135deg, #e8a0b4, #d48196); border: none;
+            border-radius: 16px; cursor: pointer;
+        }
+        .hidden { display: none !important; }
+        .side { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .side a {
+            flex: 1; min-width: 120px; text-align: center; padding: 14px; text-decoration: none;
+            color: #2d1f24; font-weight: 500; font-size: 0.85rem;
+            background: rgba(255,255,255,0.7); border-radius: 16px; border: 1px solid rgba(255,255,255,0.6);
+            transition: 0.2s;
+        }
+        .side a:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(232,160,180,0.15); }
+        @media (max-width: 500px) { .row { grid-template-columns: 1fr; } .wrap { padding: 20px 14px; } }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="logo">Zhosik <span>Nails</span></div>
+    <div class="sub">Искусство маникюра</div>
+    <h2>Записаться онлайн</h2>
+    <p class="info">Выберите услугу, дату и время</p>
+    <form id="f" autocomplete="off">
+        <div class="fg">
+            <label>Услуга</label>
+            <select id="svc"><option value="">— Выберите —</option>
+                <option value="manicure_strengthen" data-dur="120" data-price="1800">Маникюр с укреплением — 1 800 ₽ (2 ч)</option>
+                <option value="extension" data-dur="180" data-price="2500">Наращивание — 2 500 ₽ (3 ч)</option>
+                <option value="complex_design" data-dur="210" data-price="3200">Сложный дизайн — 3 200 ₽ (3.5 ч)</option>
+                <option value="hardware_manicure" data-dur="60" data-price="1000">Аппаратный маникюр — 1 000 ₽ (1 ч)</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label>Дата</label>
+            <select id="dt" disabled><option value="">— Сначала выберите услугу —</option></select>
+        </div>
+        <div class="fg">
+            <label>Время</label>
+            <div class="times" id="ts"><div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Загрузка...</div></div>
+            <input type="hidden" id="ti">
+        </div>
+        <div class="row">
+            <div class="fg"><label>Имя</label><input id="nm" placeholder="Анна" required></div>
+            <div class="fg"><label>Телефон</label><input id="ph" placeholder="+7 (___) ___-__-__" required></div>
+        </div>
+        <button type="submit" class="btn" id="sb"><span id="sbt">Записаться</span></button>
+    </form>
+    <div class="err" id="er"></div>
+    <div class="side">
+        <a href="check.html">🔍 Проверить запись</a>
+        <a href="master.html?access=zhosik-jasmine-secret">🔧 Мастер</a>
+        <a href="admin.html?access=zhosik-jasmine-secret">📊 CRM</a>
+    </div>
+</div>
+<div class="modal hidden" id="md"><div>
+    <h3>✨ Запись создана</h3>
+    <p id="mm"></p>
+    <div id="mc" style="background:#fce4ec;border-radius:12px;padding:12px;margin-bottom:14px;font-size:0.85rem;"></div>
+    <button id="mcb">Закрыть</button>
+</div></div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbysSy81zufCQN_9E1g_GtGCIvD7myNL0drzU3EfcboMvL4aV47Vxuyt_AL6KHhAf3KnrQ/exec';
+function $(s){return document.querySelector(s);}
+function mask(v){let d=v.replace(/\D/g,'').slice(0,11);if(d.startsWith('8'))d='7'+d.slice(1);if(!d.startsWith('7')&&d.length>0)d='7'+d;let f='+7';if(d.length>1)f+=' ('+d.slice(1,4);if(d.length>=4)f+=') '+d.slice(4,7);if(d.length>=7)f+='-'+d.slice(7,9);if(d.length>=9)f+='-'+d.slice(9,11);return f;}
+function cln(v){return v.replace(/\D/g,'');}
+function api(p){return new Promise(r=>{const cb='c'+Date.now();window[cb]=d=>{delete window[cb];r(d);};const s=document.createElement('script');s.src=API+'?action='+p.action+'&'+Object.entries(p).filter(([k])=>k!=='action').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&')+'&callback='+cb;s.onerror=()=>{delete window[cb];r({ok:false,error:'Ошибка сети'});};document.head.appendChild(s);setTimeout(()=>{if(window[cb]){delete window[cb];r({ok:false,error:'Таймаут'});}},15000);});}
+let dates=[];
+$('#svc').addEventListener('change',async()=>{
+    const o=$('#svc').selectedOptions[0];
+    $('#dt').innerHTML='<option value="">Загрузка...</option>';$('#dt').disabled=true;$('#ts').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Загрузка...</div>';$('#ti').value='';
+    if(!o.value) return $('#dt').innerHTML='<option value="">— Сначала выберите услугу —</option>';
+    const r=await api({action:'getOpenDates'});
+    if(r.ok&&r.dates){dates=r.dates;const t=new Date();t.setHours(0,0,0,0);$('#dt').innerHTML='<option value="">— Выберите дату —</option>'+r.dates.filter(d=>new Date(d+'T00:00:00')>=t).map(d=>`<option value="${d}">${d.split('-')[2]}.${d.split('-')[1]}.${d.split('-')[0]}</option>`).join('');$('#dt').disabled=false;}
+    else $('#dt').innerHTML='<option value="">Нет дат</option>';
+});
+$('#dt').addEventListener('change',async()=>{
+    const d=$('#dt').value,o=$('#svc').selectedOptions[0];$('#ti').value='';
+    if(!d||!o||!o.value) return $('#ts').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Выберите услугу и дату</div>';
+    $('#ts').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Загрузка...</div>';
+    const r=await api({action:'getSlots',date:d,duration:parseInt(o.dataset.dur)});
+    if(r.ok&&r.slots) $('#ts').innerHTML=r.slots.map(s=>`<button type="button" class="tbtn" data-t="${s}">${s.slice(0,5)}</button>`).join('');
+    else $('#ts').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Нет слотов</div>';
+    document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',function(){document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('sel'));this.classList.add('sel');$('#ti').value=this.dataset.t;}));
+});
+$('#ph').addEventListener('input',function(){this.value=mask(this.value);});
+$('#f').addEventListener('submit',async e=>{
+    e.preventDefault();$('#er').classList.remove('show');
+    const o=$('#svc').selectedOptions[0],d=$('#dt').value,t=$('#ti').value,nm=$('#nm').value.trim(),ph=cln($('#ph').value);
+    if(!o||!o.value||!d||!t||nm.length<2||ph.length!==11||!ph.startsWith('7')) return $('#er').textContent='Заполните все поля корректно',$('#er').classList.add('show');
+    $('#sbt').textContent='Отправка...';$('#sb').disabled=true;
+    const r=await api({action:'book',service:o.value,date:d,time:t,duration:parseInt(o.dataset.dur),clientName:nm,clientPhone:ph});
+    $('#sbt').textContent='Записаться';$('#sb').disabled=false;
+    if(r.ok){
+        $('#mm').textContent='Ваша запись успешно создана!';
+        $('#mc').innerHTML=`<b>Услуга:</b> ${o.textContent.split(' — ')[0]}<br><b>Дата:</b> ${d.split('-')[2]}.${d.split('-')[1]}.${d.split('-')[0]}<br><b>Время:</b> ${t.slice(0,5)}`;
+        $('#md').classList.remove('hidden');$('#f').reset();$('#dt').innerHTML='<option value="">— Сначала выберите услугу —</option>';$('#dt').disabled=true;$('#ts').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#9e7d8a;padding:20px;">Сначала выберите услугу и дату</div>';
+    } else $('#er').textContent=r.error||'Ошибка',$('#er').classList.add('show');
+});
+$('#mcb').addEventListener('click',()=>$('#md').classList.add('hidden'));
+</script>
+</body>
+</html>

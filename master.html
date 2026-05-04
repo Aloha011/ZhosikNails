@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhosik Nails — Панель мастера</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#fce4ec,#fdf6f0,#fff5f7);min-height:100vh;color:#2d1f24;padding:16px;}
+        .wrap{max-width:1000px;margin:0 auto;background:rgba(255,255,255,0.75);backdrop-filter:blur(20px);border-radius:28px;padding:24px 18px;border:1px solid rgba(255,255,255,0.7);box-shadow:0 8px 40px rgba(232,160,180,0.15);}
+        .back{color:#9e7d8a;text-decoration:none;font-size:0.85rem;display:inline-block;margin-bottom:12px;}
+        .logo{text-align:center;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;}
+        .logo span{color:#d48196;font-style:italic;}
+        .sub{text-align:center;font-size:0.75rem;color:#9e7d8a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;}
+        .tabs{display:flex;gap:4px;flex-wrap:wrap;background:rgba(255,255,255,0.5);border-radius:16px;padding:4px;margin-bottom:16px;}
+        .tab{flex:1;min-width:70px;padding:10px 8px;font-size:0.72rem;font-weight:600;font-family:inherit;border:none;border-radius:12px;cursor:pointer;background:transparent;color:#9e7d8a;white-space:nowrap;}
+        .tab.active{background:#fff;color:#2d1f24;box-shadow:0 2px 12px rgba(232,160,180,0.1);}
+        .pane{display:none;}
+        .pane.active{display:block;}
+        .btn{padding:8px 16px;font-size:0.8rem;font-weight:600;font-family:inherit;border:none;border-radius:14px;cursor:pointer;margin:2px;}
+        .btn-p{background:linear-gradient(135deg,#e8a0b4,#d48196);color:#fff;}
+        .btn-s{background:transparent;border:1.5px solid rgba(232,160,180,0.4);color:#6b4c5a;}
+        .btn-d{border:1.5px solid rgba(232,139,139,0.5);color:#c0392b;background:transparent;}
+        .msg{padding:8px 12px;border-radius:10px;margin-top:8px;font-size:0.8rem;display:none;}
+        .msg.show{display:block;}
+        .msg.ok{background:rgba(124,191,158,0.2);color:#27835a;}
+        .msg.er{background:rgba(232,139,139,0.2);color:#c0392b;}
+        .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+        .ch{text-align:center;font-size:0.65rem;font-weight:600;color:#9e7d8a;padding:6px;text-transform:uppercase;}
+        .cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:0.8rem;background:#fff;border:1px solid transparent;}
+        .cd.past{opacity:0.4;cursor:not-allowed;}
+        .cd.open{background:rgba(124,191,158,0.3);border-color:#7cbf9e;}
+        .cd.closed{background:rgba(232,139,139,0.1);}
+        .cd.today{border-color:#d48196;font-weight:700;}
+        .card{background:rgba(255,255,255,0.8);border-radius:16px;padding:16px;margin-bottom:12px;}
+        label{display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;color:#6b4c5a;margin-bottom:3px;}
+        select,input{width:100%;padding:10px 12px;font-size:0.85rem;font-family:inherit;border:1.5px solid rgba(232,160,180,0.3);border-radius:10px;background:rgba(255,255,255,0.85);outline:none;margin-bottom:8px;}
+        .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+        .chip{padding:4px 12px;background:rgba(124,191,158,0.25);border-radius:12px;font-size:0.75rem;}
+        .bcard{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;font-size:0.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;border:1px solid rgba(232,160,180,0.1);}
+        .bcard .act{display:flex;flex-direction:column;gap:3px;}
+        .mini{padding:3px 8px;font-size:0.65rem;font-family:inherit;border-radius:8px;cursor:pointer;border:1px solid rgba(232,160,180,0.25);background:#fff;}
+        .badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:0.65rem;font-weight:600;}
+        .bp{background:rgba(232,200,139,0.3);color:#8b6914;}
+        .bc{background:rgba(124,191,158,0.3);color:#27835a;}
+        .bx{background:rgba(232,139,139,0.3);color:#c0392b;}
+        .hidden{display:none!important;}
+        .deny{text-align:center;padding:60px 20px;}
+        .deny h2{font-family:'Playfair Display',serif;margin:10px 0;}
+        .modal{position:fixed;inset:0;background:rgba(45,31,36,0.5);display:flex;align-items:center;justify-content:center;z-index:100;}
+        .modal>div{background:#fff;border-radius:20px;padding:24px;max-width:360px;width:90%;text-align:center;}
+        @media(max-width:500px){.tabs{gap:2px;}.tab{font-size:0.65rem;padding:8px 4px;}.cal{gap:2px;}.cd{font-size:0.65rem;}}
+    </style>
+</head>
+<body>
+<div class="wrap" id="app">
+<div id="deny" class="deny hidden"><h2>🔒 Доступ запрещён</h2><p>Нужна секретная ссылка</p><a href="index.html" class="btn btn-p" style="text-decoration:none;display:inline-block;margin-top:16px;">На главную</a></div>
+<div id="ui" class="hidden">
+    <a href="index.html" class="back">← На главную</a>
+    <div class="logo">Zhosik <span>Nails</span></div>
+    <div class="sub">Панель мастера</div>
+    <div class="tabs">
+        <button class="tab active" data-t="cal">📅 Календарь</button>
+        <button class="tab" data-t="slt">🕐 Слоты</button>
+        <button class="tab" data-t="bk">📋 Записи</button>
+        <button class="tab" data-t="cl">👤 Клиенты</button>
+        <button class="tab" data-t="bl">🚫 Blacklist</button>
+    </div>
+    <div class="pane active" id="p-cal">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <button class="btn btn-s" id="pm">←</button>
+            <b id="ml" style="font-family:'Playfair Display',serif;min-width:140px;text-align:center;"></b>
+            <button class="btn btn-s" id="nm">→</button>
+            <button class="btn btn-p" id="oam">Открыть месяц</button>
+            <button class="btn btn-s" id="cam">Закрыть месяц</button>
+        </div>
+        <div class="cal" id="cg"></div>
+        <div class="msg" id="cmsg"></div>
+    </div>
+    <div class="pane" id="p-slt">
+        <div class="card">
+            <label>Дата</label><select id="sd"></select>
+            <label>Время</label><select id="st"><option value="">—</option></select>
+            <button class="btn btn-p" id="os">Открыть слот</button>
+            <button class="btn btn-s" id="cs">Закрыть слот</button>
+            <div class="chips" id="sl"></div>
+        </div>
+        <div class="msg" id="smsg"></div>
+    </div>
+    <div class="pane" id="p-bk">
+        <div class="card"><label>Фильтр по дате</label><input type="date" id="bf"><button class="btn btn-p" id="rb" style="margin-top:8px;">Обновить</button></div>
+        <div id="blist"></div>
+        <div class="msg" id="bmsg"></div>
+    </div>
+    <div class="pane" id="p-cl">
+        <div class="card"><label>Телефон клиента</label><input id="cph" placeholder="79991234567"><button class="btn btn-p" id="sch">Поиск</button><div id="chist" style="margin-top:10px;"></div></div>
+    </div>
+    <div class="pane" id="p-bl">
+        <div class="card"><label>Телефон</label><input id="blph" placeholder="79991234567"><label>Причина</label><input id="blr" placeholder="Причина"><button class="btn btn-p" id="ab">Добавить</button><div id="bll" style="margin-top:10px;"></div></div>
+        <div class="msg" id="blmsg"></div>
+    </div>
+</div>
+<div class="modal hidden" id="mv"><div><h3>Перенести</h3><label>Дата</label><select id="mvd"></select><label>Время</label><select id="mvt"></select><button class="btn btn-p" id="cmv">Перенести</button><button class="btn btn-s" id="xmv" style="margin-top:6px;">Отмена</button></div></div>
+</div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbysSy81zufCQN_9E1g_GtGCIvD7myNL0drzU3EfcboMvL4aV47Vxuyt_AL6KHhAf3KnrQ/exec';
+const KEY='zhosik-jasmine-secret';
+if(new URLSearchParams(location.search).get('access')!==KEY){document.getElementById('deny').classList.remove('hidden');}else{
+document.getElementById('ui').classList.remove('hidden');
+function $(s){return document.querySelector(s);}
+function $$(s){return document.querySelectorAll(s);}
+function fd(d){const p=d.split('-');return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d;}
+function ft(t){return t.slice(0,5);}
+function msg(id,t,c){const e=document.getElementById(id);if(!e)return;e.textContent=t;e.className='msg '+c+' show';setTimeout(()=>e.classList.remove('show'),4000);}
+function api(p){return new Promise(r=>{const cb='c'+Date.now();window[cb]=d=>{delete window[cb];r(d);};const s=document.createElement('script');s.src=API+'?action='+p.action+'&'+Object.entries(p).filter(([k])=>k!=='action').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&')+'&callback='+cb;s.onerror=()=>{delete window[cb];r({ok:false,error:'Ошибка сети'});};document.head.appendChild(s);setTimeout(()=>{if(window[cb]){delete window[cb];r({ok:false,error:'Таймаут'});}},15000);});}
+
+$$('.tab').forEach(t=>t.addEventListener('click',function(){
+    $$('.tab').forEach(x=>x.classList.remove('active'));$$('.pane').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');document.getElementById('p-'+this.dataset.t).classList.add('active');
+    if(this.dataset.t==='cal') loadCal();
+    if(this.dataset.t==='slt') loadSlots();
+    if(this.dataset.t==='bk') loadBookings();
+    if(this.dataset.t==='bl') loadBlacklist();
+}));
+
+let cm=new Date().getMonth(),cy=new Date().getFullYear();let ods=new Set();
+async function loadCal(){const r=await api({action:'getOpenDates'});ods=new Set(r.dates||[]);renderCal();}
+function renderCal(){
+    const g=$('#cg'),l=$('#ml');const ms=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    l.textContent=ms[cm]+' '+cy;g.innerHTML='';
+    ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'].forEach(h=>{const d=document.createElement('div');d.className='ch';d.textContent=h;g.appendChild(d);});
+    const fd=new Date(cy,cm,1).getDay();const days=new Date(cy,cm+1,0).getDate();const today=new Date();today.setHours(0,0,0,0);
+    for(let i=0;i<(fd===0?6:fd-1);i++){const d=document.createElement('div');d.className='cd';g.appendChild(d);}
+    for(let d=1;d<=days;d++){
+        const ds=`${cy}-${String(cm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cd=new Date(cy,cm,d);const dv=document.createElement('div');dv.className='cd';dv.textContent=d;
+        if(cd<today)dv.classList.add('past');
+        if(ods.has(ds))dv.classList.add('open');else if(cd>=today)dv.classList.add('closed');
+        if(cd.getTime()===today.getTime())dv.classList.add('today');
+        dv.addEventListener('click',async()=>{if(cd<today)return;const r=ods.has(ds)?await api({action:'closeDate',date:ds}):await api({action:'openDate',date:ds});if(r.ok){ods.has(ds)?ods.delete(ds):ods.add(ds);renderCal();}});
+        g.appendChild(dv);
+    }
+}
+$('#pm').addEventListener('click',()=>{if(cm===0){cm=11;cy--;}else cm--;loadCal();});
+$('#nm').addEventListener('click',()=>{if(cm===11){cm=0;cy++;}else cm++;loadCal();});
+$('#oam').addEventListener('click',async()=>{await api({action:'openAllMonth',month:cm+1,year:cy});loadCal();});
+$('#cam').addEventListener('click',async()=>{await api({action:'closeAllMonth',month:cm+1,year:cy});loadCal();});
+
+async function loadSlots(){
+    const r=await api({action:'getOpenDates'});$('#sd').innerHTML='<option value="">—</option>'+(r.dates||[]).map(d=>`<option value="${d}">${fd(d)}</option>`).join('');
+    $('#st').innerHTML='<option value="">—</option>';
+    for(let h=8;h<22;h++)for(let m=0;m<60;m+=30){const t=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;$('#st').innerHTML+=`<option value="${t}">${t}</option>`;}
+}
+$('#sd').addEventListener('change',async function(){const r=await api({action:'getRawSlots',date:this.value});if(r.ok)$('#sl').innerHTML=r.slots.map(s=>`<span class="chip">${ft(s)}</span>`).join('');});
+$('#os').addEventListener('click',async()=>{const d=$('#sd').value,t=$('#st').value;if(!d||!t)return;const r=await api({action:'openSlot',date:d,time:t});if(r.ok){$('#sd').dispatchEvent(new Event('change'));msg('smsg','Слот открыт','ok');}else msg('smsg',r.error,'er');});
+$('#cs').addEventListener('click',async()=>{const d=$('#sd').value,t=$('#st').value;if(!d||!t)return;const r=await api({action:'closeSlot',date:d,time:t});if(r.ok){$('#sd').dispatchEvent(new Event('change'));msg('smsg','Слот закрыт','ok');}else msg('smsg',r.error,'er');});
+
+async function loadBookings(){
+    const f=$('#bf').value;const r=await api({action:'getBookings',date:f||undefined});
+    const l=$('#blist');
+    if(r.ok&&r.bookings)l.innerHTML=r.bookings.map(b=>`<div class="bcard"><div><b>${b.serviceName}</b><br>${fd(b.date)} ${ft(b.time)} — ${b.clientName}<br>+7 ${b.clientPhone.slice(1,4)} ${b.clientPhone.slice(4,7)}-${b.clientPhone.slice(7,9)}-${b.clientPhone.slice(9,11)} <span class="badge b${b.status==='confirmed'?'c':b.status==='cancelled'?'x':'p'}">${b.status==='confirmed'?'Ок':b.status==='cancelled'?'Отм':'Ждёт'}</span><br><small style="color:#9e7d8a;">${b.id}</small></div><div class="act">${b.status!=='confirmed'?`<button class="mini" data-act="confirm" data-id="${b.id}">✅</button>`:''}${b.status!=='cancelled'?`<button class="mini" data-act="cancel" data-id="${b.id}">❌</button>`:''}<button class="mini" data-act="move" data-id="${b.id}">↔</button><button class="mini btn-d" data-act="delete" data-id="${b.id}">🗑</button></div></div>`).join('');
+    else l.innerHTML='<p>Нет записей</p>';
+    $$('[data-act="confirm"]').forEach(b=>b.addEventListener('click',async()=>{await api({action:'confirmBooking',id:b.dataset.id});loadBookings();}));
+    $$('[data-act="cancel"]').forEach(b=>b.addEventListener('click',async()=>{await api({action:'cancelBooking',id:b.dataset.id});loadBookings();}));
+    $$('[data-act="delete"]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Удалить?'))return;await api({action:'deleteBooking',id:b.dataset.id});loadBookings();}));
+    $$('[data-act="move"]').forEach(b=>b.addEventListener('click',()=>openMove(b.dataset.id)));
+}
+$('#rb').addEventListener('click',loadBookings);
+let moveId=null;
+async function openMove(id){moveId=id;const r=await api({action:'getOpenDates'});$('#mvd').innerHTML='<option value="">—</option>'+(r.dates||[]).map(d=>`<option value="${d}">${fd(d)}</option>`).join('');$('#mvt').innerHTML='<option value="">—</option>';$('#mv').classList.remove('hidden');}
+$('#mvd').addEventListener('change',async function(){const r=await api({action:'getRawSlots',date:this.value});$('#mvt').innerHTML='<option value="">—</option>'+(r.ok?r.slots.map(s=>`<option value="${s}">${ft(s)}</option>`).join(''):'');});
+$('#cmv').addEventListener('click',async()=>{const d=$('#mvd').value,t=$('#mvt').value;if(!moveId||!d||!t)return;const r=await api({action:'moveBooking',id:moveId,newDate:d,newTime:t});if(r.ok){$('#mv').classList.add('hidden');loadBookings();}else msg('bmsg',r.error,'er');});
+$('#xmv').addEventListener('click',()=>{$('#mv').classList.add('hidden');moveId=null;});
+
+$('#sch').addEventListener('click',async()=>{const p=$('#cph').value.replace(/\D/g,'');if(p.length<11)return;const r=await api({action:'clientHistory',clientPhone:p});$('#chist').innerHTML=r.ok&&r.history?r.history.map(b=>`<div style="padding:6px 0;border-bottom:1px solid rgba(232,160,180,0.1);">${fd(b.date)} ${ft(b.time)} — ${b.serviceName} (${b.status})</div>`).join(''):'<p>Нет истории</p>';});
+
+async function loadBlacklist(){const r=await api({action:'getBlacklist'});$('#bll').innerHTML=r.ok&&r.list?r.list.map(i=>`<div style="display:flex;justify-content:space-between;padding:8px;background:#fff;border-radius:8px;margin-bottom:5px;"><span>+7 ${i.phone.slice(1,4)} ${i.phone.slice(4,7)}-${i.phone.slice(7,9)}-${i.phone.slice(9,11)} — ${i.reason||'—'}</span><button class="mini btn-d" data-r="${i.phone}">Удалить</button></div>`).join(''):'<p>Пусто</p>';$$('[data-r]').forEach(b=>b.addEventListener('click',async()=>{await api({action:'blacklistRemove',phone:b.dataset.r});loadBlacklist();}));}
+$('#ab').addEventListener('click',async()=>{const p=$('#blph').value.replace(/\D/g,''),r=$('#blr').value;if(p.length<11)return;const res=await api({action:'blacklistAdd',phone:p,reason:r});if(res.ok){loadBlacklist();$('#blph').value='';$('#blr').value='';msg('blmsg','Добавлен','ok');}else msg('blmsg',res.error,'er');});
+
+loadCal();
+}
+</script>
+</body>
+</html>
